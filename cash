@@ -1,0 +1,29 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <math.h>
+
+int main(void){
+    float amount = 0;
+    do {
+     amount = get_float("Change owed: ");
+    } while (amount<1);
+    int cents = round(amount * 100);
+    int count = 0;
+    while (cents>24){
+        cents-= 25;
+        count++;
+    }
+    while (cents>9){
+        cents-=10;
+        count++;
+    }
+    while (cents>4){
+        cents-=5;
+        count++;
+    }
+    while (cents>0){
+        cents-=1;
+        count++;
+    }
+    printf("%i\n", count);
+}
