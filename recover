@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+int main(int argc, char *argv[])
+{
+if (argc !=2){
+    fprintf(stderr,"Error, One Command Line Argument Required\n"); // used to prevent any inputs of more than one argument
+    return 1;
+}
+
+FILE *file = fopen(argv[1], "r");
+if(file == NULL){
+    fprintf(stderr,"Error, Image Cannot Be Opened\n"); // reads a file. if null, then print out error
+    return 2;
+}
+// Create outfile for picture
+    FILE *img = NULL; // this will be where all of the images that are found will be stored
+
+    // Create buffer and filename arrays
+    unsigned char buffer[512]; //creating an array to temporarily store all of the part files
+                                // unsigned char is a qualifier which is used to increase the values to be written in the memory blocks
+    char filename[8]; //created to store the filenames of the images
+
+    //Set counter for filename
+    int counter = 0; //used to make each JPEG number from 000
+
+    //Set flag
+    bool flag = false; //used to indicate the end of an image
+    
+while(fread(buffer,512,1,file) == 1){
+    
+    if(buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0){ //make sure we are readinga  JPEG
+       //Close current JPEG, so we can start reading the next
+            if (flag == true)
+            {
+                fclose(img);
+            }
+            //Condition for found JPEG
+            else
+            {
+                flag = true;
+            }
+
+            sprintf(filename, "%03i.jpg", counter); //setting the filename
+            img = fopen(filename, "w"); //inputting the filename in img
+            counter++;
+        }
+
+    if (flag == true)
+        {
+            fwrite(&buffer, 512, 1, img); //writning the 512 byte buffer array to the image file which recovers the image.
+        }
+    }
+
+    //Close all files
+    fclose(file);
+    fclose(img);
+
+    //Success
+    return 0;
+
+}
