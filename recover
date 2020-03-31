@@ -20,7 +20,7 @@ if(file == NULL){
     unsigned char buffer[512]; //creating an array to temporarily store all of the part files
                                 // unsigned char is a qualifier which is used to increase the values to be written in the memory blocks
     char filename[8]; //created to store the filenames of the images
-
+                      //code must generate a filename that is three digits (3 chars), followed by a period (1 char), followed by jpg (3 chars). The last index is for the null terminator character.
     //Set counter for filename
     int counter = 0; //used to make each JPEG number from 000
 
