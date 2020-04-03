@@ -1,0 +1,142 @@
+// Implements a dictionary's functionality
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <cs50.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+
+#include "dictionary.h"
+
+// Represents number of buckets in a hash table
+#define N 26
+
+// Represents a node in a hash table
+typedef struct node //calling this would allow access to the variables in it
+{
+    char word[LENGTH + 1];
+    struct node *next;
+}
+node;
+
+
+
+unsigned long words = 0;
+
+
+// Represents a hash table
+node *hashtable[N];
+
+// convert word to a number between 0 and 25, inclusive, based on its first letter
+unsigned int hash(const char *word)
+{
+    return tolower(word[0]) - 'a'; //returns 1 for a 25 for z
+}
+
+// Loads dictionary into memory, returning true if successful, else false
+bool load(const char *dictionary)
+{
+    // Initialize hash table, sets each hashtable value to NULL
+    for (int i = 0; i < N; i++)
+    {
+        hashtable[i] = NULL;
+    }
+
+    // Open dictionary
+    FILE *file = fopen(dictionary, "r");
+    if (file == NULL)
+    {
+        unload();
+        return false;
+    }
+
+    // Buffer for a word
+    char word[LENGTH + 1];
+
+    // Insert words into hash table
+    while (fscanf(file, "%s", word) != EOF) // scans the file and outputs a word in the file
+    {
+        int index = hash(word) % N; //return an integer
+        
+     	node* temp = malloc(sizeof(node)); //open up temporary space (for the words?)
+
+    	//Test to see if node is null
+    	if (temp == NULL)
+    	{
+    	    fclose(file);
+    	    return false;
+    	}
+        
+        //Move to the next node in the list
+    	strcpy(temp -> word, word); //(destination, string to be copied)
+        temp -> next = hashtable[index]; //?????
+
+        hashtable[index] = temp;
+        words++;
+    }
+
+    // Close dictionary
+    fclose(file);
+
+    // Indicate success
+    return true;
+}
+
+// Returns number of words in dictionary if loaded, else 0 if not yet loaded
+unsigned int size(void)
+{
+
+    return words;
+}
+
+// Returns true if word is in dictionary, else false
+bool check(const char *word)
+{
+    int n = strlen(word);
+    char arr [n+1]; //handles most basic words properly
+    arr[n] = '\0'; //prevents memory errors
+    
+    for(int i =0; i < n; i++){
+        arr[i] = tolower(word[i]);
+    }
+    int index = hash(arr) % N;
+    node* head = hashtable[index];
+    
+    if(head != NULL){
+     node *curser = head;
+     //Pass lower case word to hash function to get index
+   
+  while(curser != NULL){
+      
+      if(strcmp(arr,curser->word) == 0){ //compares the two string, if they are the same, then we found our word in the dictionary
+          return true;
+      }
+      curser = curser->next; //if the words aren't the same, then move cursor to the next hashtable array
+  }
+  
+
+}
+    return false;
+}
+
+// Unloads dictionary from memory, returning true if successful, else false
+bool unload(void)
+{
+    for (int i = 0; i < N; i++)
+    {
+        // check the table for a node at that index
+        node* cursor = hashtable[i];
+        while (cursor != NULL)
+        {
+            // create a temporary node
+            node* temp = cursor; //???????
+            cursor = cursor -> next;
+
+            // free the current node
+            free(temp);
+        }
+    }
+    return true;
+}
