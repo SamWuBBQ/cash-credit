@@ -71,7 +71,7 @@ bool load(const char *dictionary)
         
         //Move to the next node in the list
     	strcpy(temp -> word, word); //(destination, string to be copied)
-        temp -> next = hashtable[index]; //?????
+        temp -> next = hashtable[index]; //temp is a node and if you scroll up to the top, the node contains the next value.
 
         hashtable[index] = temp;
         words++;
@@ -131,7 +131,7 @@ bool unload(void)
         while (cursor != NULL)
         {
             // create a temporary node
-            node* temp = cursor; //???????
+            node* temp = cursor; 
             cursor = cursor -> next;
 
             // free the current node
@@ -140,3 +140,5 @@ bool unload(void)
     }
     return true;
 }
+
+
